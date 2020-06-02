@@ -1,30 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace ButtonGrid
+namespace ButtonGrid_Git
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly int SQUARE_SIDE_LENGTH = 3;
+        private readonly double SQUARE_SIDE_LENGTH = 11;
+
+        private const int INVALID_ADJACENCY = -1;
 
         public MainWindow()
         {
+            GridButton[,] gridButtonMultiArray = new GridButton[Convert.ToInt32(SQUARE_SIDE_LENGTH), Convert.ToInt32(SQUARE_SIDE_LENGTH)];
+
             InitializeComponent();
 
             StackPanel mainStackPanel = new StackPanel
@@ -33,14 +26,27 @@ namespace ButtonGrid
                 VerticalAlignment = VerticalAlignment.Center
             };
 
-            Grid gridPanel = Init_GridPanel();
+            Grid gridPanel = Init_GridPanel(gridButtonMultiArray);
+
+
+
+            double startingRow = Math.Floor(SQUARE_SIDE_LENGTH / 2);
+
+            double staringColumn = Math.Floor(SQUARE_SIDE_LENGTH / 2);
+
+            gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(staringColumn)].Background = Brushes.LightBlue;
+
+            gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(staringColumn)].IsSelected = true;
+
+
 
             mainStackPanel.Children.Add(gridPanel);
 
+            //Add the Stack Panel with all of our logic into the actual Content 
             Content = mainStackPanel;
         }
 
-        private Grid Init_GridPanel()
+        private Grid Init_GridPanel(GridButton[,] gridButtonMultiArray)
         {
             Grid gridPanel = new Grid();
 
@@ -52,22 +58,88 @@ namespace ButtonGrid
                 {
                     gridPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-                    Button b = new Button
+                    GridButton newGridButton = new GridButton(rowNumber, columnNumber)
                     {
-                        Background = Brushes.Red,
-                        Content = "Test"
-
+                        Background = Brushes.Red,                 
                     };
 
-                    Grid.SetColumn(b, columnNumber);
-                    Grid.SetRow(b, rowNumber);
+                    newGridButton.Content = newGridButton.gridPosition.RowNumber + ", " + newGridButton.gridPosition.ColumnNumber;
 
-                    gridPanel.Children.Add(b);
+                    Grid.SetColumn(newGridButton, columnNumber);
+                    Grid.SetRow(newGridButton, rowNumber);
+
+                    gridPanel.Children.Add(newGridButton);
+
+                    //Check Adjacendy of the new GridButton
+                    CheckAdjacency(newGridButton, rowNumber, columnNumber);
+
+                    //Add to 2D Array
+                    gridButtonMultiArray[rowNumber, columnNumber] = newGridButton;
                 }
 
             }
-      
+
+            //next - write a print function to verify that your adjacency values are correct.
+
             return gridPanel;
+        }
+
+        private void CheckAdjacency(GridButton newGridButton, int rowNumber, int ColumnNumber)
+        {
+            //Does it have valid top adjacency?
+
+            if (rowNumber - 1 < 0)
+            {
+                newGridButton.TopAdjacency.RowNumber = INVALID_ADJACENCY;
+                newGridButton.TopAdjacency.ColumnNumber = ColumnNumber;
+            }
+            else
+            {
+                newGridButton.TopAdjacency.RowNumber = rowNumber - 1;
+                newGridButton.TopAdjacency.ColumnNumber = ColumnNumber;
+            }
+
+
+            //Does it have valid right adjacency?
+
+            if (ColumnNumber + 1 > SQUARE_SIDE_LENGTH)
+            {
+                newGridButton.RightAdjacency.RowNumber = rowNumber;
+                newGridButton.RightAdjacency.ColumnNumber = INVALID_ADJACENCY;
+                
+            }
+            else
+            {
+                newGridButton.RightAdjacency.RowNumber = rowNumber;
+                newGridButton.RightAdjacency.ColumnNumber = ColumnNumber + 1;
+            }
+
+            //Does it have valid down adjacency?
+
+            if (rowNumber + 1 > SQUARE_SIDE_LENGTH)
+            {
+                newGridButton.DownAdjacency.RowNumber = INVALID_ADJACENCY;
+                newGridButton.DownAdjacency.ColumnNumber = ColumnNumber;
+            }
+            else
+            {
+                newGridButton.DownAdjacency.RowNumber = rowNumber + 1;
+                newGridButton.DownAdjacency.ColumnNumber = ColumnNumber;
+            }
+
+
+            //Does it have valid left adjacency?
+            if (ColumnNumber - 1 < 0)
+            {
+                newGridButton.LeftAdjacency.RowNumber = rowNumber;
+                newGridButton.LeftAdjacency.ColumnNumber = INVALID_ADJACENCY;
+            }
+            else
+            {
+                newGridButton.LeftAdjacency.RowNumber = rowNumber;
+                newGridButton.LeftAdjacency.ColumnNumber = ColumnNumber - 1;
+            }
+
         }
     }
 }
