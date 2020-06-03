@@ -15,8 +15,6 @@ namespace ButtonGrid_Git
         public GridPosition DownAdjacency { get; set; }
         public GridPosition LeftAdjacency { get; set; }
 
-        
-
         public bool IsSelected { get; set; }
 
         public readonly GridPosition gridPosition;
