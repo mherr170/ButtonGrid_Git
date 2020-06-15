@@ -8,19 +8,27 @@ using System.Windows.Media;
 using ButtonGrid_Git.DTO;
 using ButtonGrid_Git.Adjacency;
 using ButtonGrid_Git.Constants;
+using System.Windows.Input;
+
+using System.Windows.Threading;
 
 namespace ButtonGrid_Git
 {
 
     public partial class MainWindow : Window
     {
+        GridButton[,] gridButtonMultiArray;
+
         private readonly TextBlock adjacencyInfoTextBlock;
 
         private GridButton previouslySelectedButton;
 
+        private double startingRow;
+        private double startingColumn;
+
         public MainWindow()
         {
-            GridButton[,] gridButtonMultiArray = new GridButton[Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH), Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH)];
+            gridButtonMultiArray = new GridButton[Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH), Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH)];
 
             InitializeComponent();
 
@@ -29,16 +37,29 @@ namespace ButtonGrid_Git
             //Add a Text Block to display the adjacency information for any button that you click.
             adjacencyInfoTextBlock = Init_AdjacencyInfoTextBlock();
             
-            Grid gridPanel = Init_GridPanel(gridButtonMultiArray);
+            Grid gridPanel = Init_GridPanel();
 
-            HightlightMiddleOfGrid(gridButtonMultiArray);
+            HightlightMiddleOfGrid();
 
             mainStackPanel.Children.Add(adjacencyInfoTextBlock);
             mainStackPanel.Children.Add(gridPanel);
 
+            SetKeyBoardFocusToMiddleGridButton();
+
             //Add the Stack Panel with all of our logic into the actual Content 
             Content = mainStackPanel;
         }
+
+        private void SetKeyBoardFocusToMiddleGridButton()
+        {
+            this.Dispatcher.BeginInvoke((Action)delegate
+            {
+                Keyboard.Focus(gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(startingColumn)]);
+            }, DispatcherPriority.Render);
+
+            adjacencyInfoTextBlock.Text = BuildAdjacencyInfoDisplayString(gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(startingColumn)]).ToString();
+        }
+
 
         private TextBlock Init_AdjacencyInfoTextBlock()
         {
@@ -74,7 +95,7 @@ namespace ButtonGrid_Git
             return defaultAdjacencyInfoString;
         }
 
-        private Grid Init_GridPanel(GridButton[,] gridButtonMultiArray)
+        private Grid Init_GridPanel()
         {
             Grid gridPanel = new Grid();
 
@@ -124,23 +145,110 @@ namespace ButtonGrid_Git
 
             newGridButton.Content = newGridButton.gridPosition.RowNumber + ", " + newGridButton.gridPosition.ColumnNumber;
 
-            //I'm not sure what order these get fired, but they both appear to work.
+            //I'm not sure what order these get fired, but they appear to all work.
+            newGridButton.KeyDown += NewGridButton_KeyDown;
             newGridButton.Click += NewGridButton_Click_DisplayAdjacencyInfo;
             newGridButton.Click += NewGridButton_Click;
 
             return newGridButton;
         }
 
-        private void NewGridButton_Click(object sender, RoutedEventArgs e)
+        private void NewGridButton_KeyDown(object sender, KeyEventArgs e)
         {
-            GridButton tempGridButton = e.Source as GridButton;
+            GridButton currentGridButton = e.Source as GridButton;
 
-            tempGridButton.Background = Brushes.LightBlue;
+            switch (e.Key)
+            {
+                case Key.Up:
+                    HandleKeyUp(currentGridButton);
+                    break;
+                case Key.Down:
+                    HandleKeyDown(currentGridButton);
+                    break;
+                case Key.Left:
+                    HandleKeyLeft(currentGridButton);
+                    break;
+                case Key.Right:
+                    HandleKeyRight(currentGridButton);
+                    break;
+                default:
+                    break;
+            }
 
-            //Change the previously selected button color back to Red, and assign the currently selected as the next previously selected.
+        }
+
+        private void HandleKeyRight(GridButton currentGridButton)
+        {
+            GridButton nextGridButton;
+
+            if (currentGridButton.gridPosition.ColumnNumber + 1 < VariableConstants.SQUARE_SIDE_LENGTH)
+            {
+                nextGridButton = gridButtonMultiArray[currentGridButton.gridPosition.RowNumber, currentGridButton.gridPosition.ColumnNumber + 1];
+
+                TransitionPreviouslySelectedButton(nextGridButton);
+            }
+        }
+
+        private void HandleKeyLeft(GridButton currentGridButton)
+        {
+            //Current Button - one column = new Button
+
+            GridButton nextGridButton;
+
+            if (currentGridButton.gridPosition.ColumnNumber - 1 > VariableConstants.INVALID_ADJACENCY)
+            {
+                nextGridButton = gridButtonMultiArray[currentGridButton.gridPosition.RowNumber, currentGridButton.gridPosition.ColumnNumber - 1];
+
+                TransitionPreviouslySelectedButton(nextGridButton);
+            }
+        }
+
+        private void HandleKeyDown(GridButton currentGridButton)
+        {
+            //Current button + one row = New Button
+
+            GridButton nextGridButton;
+
+            if (currentGridButton.gridPosition.RowNumber + 1 < VariableConstants.SQUARE_SIDE_LENGTH)
+            {
+                nextGridButton = gridButtonMultiArray[currentGridButton.gridPosition.RowNumber + 1, currentGridButton.gridPosition.ColumnNumber];
+
+                TransitionPreviouslySelectedButton(nextGridButton);
+            }
+        }
+
+        private void HandleKeyUp(GridButton currentGridButton)
+        {
+            //Current button minus one row = New button.
+
+            GridButton nextGridButton;
+
+            if (currentGridButton.gridPosition.RowNumber - 1 > VariableConstants.INVALID_ADJACENCY)
+            {
+                nextGridButton = gridButtonMultiArray[currentGridButton.gridPosition.RowNumber - 1, currentGridButton.gridPosition.ColumnNumber];
+
+                TransitionPreviouslySelectedButton(nextGridButton);
+            }
+        }
+
+        private void TransitionPreviouslySelectedButton(GridButton nextGridButton)
+        {
+            adjacencyInfoTextBlock.Text = BuildAdjacencyInfoDisplayString(nextGridButton).ToString();
+
+            nextGridButton.Background = Brushes.LightBlue;
+            
             previouslySelectedButton.Background = Brushes.Red;
 
-            previouslySelectedButton = tempGridButton;
+            previouslySelectedButton = nextGridButton;
+        }
+
+        private void NewGridButton_Click(object sender, RoutedEventArgs e)
+        {
+            GridButton clickedGridButton = e.Source as GridButton;
+
+            clickedGridButton.Background = Brushes.LightBlue;
+
+            TransitionPreviouslySelectedButton(clickedGridButton);
         }
 
         private void NewGridButton_Click_DisplayAdjacencyInfo(object sender, RoutedEventArgs e)
@@ -172,18 +280,24 @@ namespace ButtonGrid_Git
             return adjacencyInfoString;
         }
 
-        private void HightlightMiddleOfGrid(GridButton[,] gridButtonMultiArray)
+        private void HightlightMiddleOfGrid()
         {
-            double startingRow = Math.Floor(VariableConstants.SQUARE_SIDE_LENGTH / 2);
+            FindAndAssignMiddleOfGrid();
 
-            double staringColumn = Math.Floor(VariableConstants.SQUARE_SIDE_LENGTH / 2);
+            gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(startingColumn)].Background = Brushes.LightBlue;
 
-            gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(staringColumn)].Background = Brushes.LightBlue;
-
-            gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(staringColumn)].IsSelected = true;
+            gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(startingColumn)].IsSelected = true;
 
             //Initialize the previously selected Grid Button.  The center starting Grid Button will always be the initial previously selected one.
-            previouslySelectedButton = gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(staringColumn)];
+            previouslySelectedButton = gridButtonMultiArray[Convert.ToInt32(startingRow), Convert.ToInt32(startingColumn)];
+        
+        }
+
+        private void FindAndAssignMiddleOfGrid()
+        {
+            startingRow = Math.Floor(VariableConstants.SQUARE_SIDE_LENGTH / 2);
+
+            startingColumn = Math.Floor(VariableConstants.SQUARE_SIDE_LENGTH / 2);
         }
 
     }
