@@ -2,7 +2,7 @@
 
 namespace ButtonGrid_Git.DTO
 {
-    class GridButton : Button
+    public class GridButton : Button
     {
 
         public GridPosition TopAdjacency { get; set; }
