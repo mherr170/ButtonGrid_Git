@@ -45,43 +45,22 @@ namespace ButtonGrid_Git
             mainStackPanel.Children.Add(gridPanel);
 
             KeyBoardHelper.SetKeyBoardFocusToMiddleGridButton(this);
+            adjacencyInfoTextBlock.Text = BuildAdjacencyInfoDisplayString(gridButtonMultiArray[Convert.ToInt32(StartingRow), Convert.ToInt32(StartingColumn)]).ToString();
 
             //Add the Stack Panel with all of our logic into the actual Content 
             Content = mainStackPanel;
         }
 
+
         private TextBlock Init_AdjacencyInfoTextBlock()
         {
             TextBlock _textBlock = new TextBlock
             {
-                Text = BuildDefaultAdjacencyInfoString().ToString(),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
              };
 
             return _textBlock;
-        }
-
-        private StringBuilder BuildDefaultAdjacencyInfoString()
-        {
-            StringBuilder defaultAdjacencyInfoString = new StringBuilder();
-
-            defaultAdjacencyInfoString.Append("My Position - Row: _ - Col: _");
-            defaultAdjacencyInfoString.Append("\n");
-
-            defaultAdjacencyInfoString.Append("Top - Row: _ - Col: _");
-            defaultAdjacencyInfoString.Append("\n");
-
-            defaultAdjacencyInfoString.Append("Right - Row: _ - Col: _");
-            defaultAdjacencyInfoString.Append("\n");
-
-            defaultAdjacencyInfoString.Append("Bottom - Row: _ - Col: _");
-            defaultAdjacencyInfoString.Append("\n");
-
-            defaultAdjacencyInfoString.Append("Left - Row: _ - Col: _");
-            defaultAdjacencyInfoString.Append("\n");
-
-            return defaultAdjacencyInfoString;
         }
 
         private Grid Init_GridPanel()
@@ -134,35 +113,55 @@ namespace ButtonGrid_Git
 
             newGridButton.Content = newGridButton.gridPosition.RowNumber + ", " + newGridButton.gridPosition.ColumnNumber;
 
+            SetGridButtonEventHandlers(newGridButton);
+
+            return newGridButton;
+        }
+
+        private void SetGridButtonEventHandlers(GridButton newGridButton)
+        {
             //I'm not sure what order these get fired, but they appear to all work.
             newGridButton.KeyDown += NewGridButton_KeyDown;
             newGridButton.Click += NewGridButton_Click_DisplayAdjacencyInfo;
             newGridButton.Click += NewGridButton_Click;
-
-            return newGridButton;
         }
 
         private void NewGridButton_KeyDown(object sender, KeyEventArgs e)
         {
             GridButton currentGridButton = e.Source as GridButton;
+            GridButton nextGridButton = null;
 
             switch (e.Key)
             {
                 case Key.Up:
-                    KeyBoardHelper.HandleKeyUp(currentGridButton, this);
+                    
+                    nextGridButton = KeyBoardHelper.HandleKeyUp(currentGridButton, this);
+
                     break;
                 case Key.Down:
-                    KeyBoardHelper.HandleKeyDown(currentGridButton, this);
+
+                    nextGridButton = KeyBoardHelper.HandleKeyDown(currentGridButton, this);
+
                     break;
                 case Key.Left:
-                    KeyBoardHelper.HandleKeyLeft(currentGridButton, this);
+
+                    nextGridButton = KeyBoardHelper.HandleKeyLeft(currentGridButton, this);
+
                     break;
                 case Key.Right:
-                    KeyBoardHelper.HandleKeyRight(currentGridButton, this);
+
+                    nextGridButton = KeyBoardHelper.HandleKeyRight(currentGridButton, this);
+
                     break;
                 default:
                     break;
             }
+
+            if (nextGridButton != null)
+            {
+                TransitionPreviouslySelectedButton(nextGridButton);
+            }
+
         }
 
         private void NewGridButton_Click(object sender, RoutedEventArgs e)

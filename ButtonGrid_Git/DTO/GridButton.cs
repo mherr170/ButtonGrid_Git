@@ -23,5 +23,6 @@ namespace ButtonGrid_Git.DTO
             DownAdjacency = new GridPosition();
             LeftAdjacency = new GridPosition();
         }
+        
     }
 }
