@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using ButtonGrid_Git.Enum;
+using System.Windows.Controls;
 
 namespace ButtonGrid_Git.DTO
 {
@@ -9,6 +10,8 @@ namespace ButtonGrid_Git.DTO
         public GridPosition RightAdjacency { get; set; }
         public GridPosition DownAdjacency { get; set; }
         public GridPosition LeftAdjacency { get; set; }
+
+        public TerrainTypeEnum.TerrainType GridButtonTerrainType { get; set; }
 
         public bool IsSelected { get; set; }
 

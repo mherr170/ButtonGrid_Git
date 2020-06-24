@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-
 using ButtonGrid_Git.DTO;
-using ButtonGrid_Git.Adjacency;
+using ButtonGrid_Git.Utility.Adjacency;
 using ButtonGrid_Git.Constants;
-
 using System.Windows.Input;
-
+using ButtonGrid_Git.TerrainGeneration;
+using ButtonGrid_Git.Enum;
 
 namespace ButtonGrid_Git
 {
@@ -44,13 +42,20 @@ namespace ButtonGrid_Git
             mainStackPanel.Children.Add(adjacencyInfoTextBlock);
             mainStackPanel.Children.Add(gridPanel);
 
-            KeyBoardHelper.SetKeyBoardFocusToMiddleGridButton(this);
+            Utility.Keyboard.KeyBoardHelper.SetKeyBoardFocusToMiddleGridButton(this);
             adjacencyInfoTextBlock.Text = BuildAdjacencyInfoDisplayString(gridButtonMultiArray[Convert.ToInt32(StartingRow), Convert.ToInt32(StartingColumn)]).ToString();
+
+            //Get hooks into the terrain generation
+            InitTerrainGeneration(gridButtonMultiArray);
 
             //Add the Stack Panel with all of our logic into the actual Content 
             Content = mainStackPanel;
         }
 
+        private void InitTerrainGeneration(GridButton[,] gridButtonMultiArray)
+        {
+            GenerateTerrain gridTerrain = new GenerateTerrain(gridButtonMultiArray, StartingRow, StartingColumn);
+        }
 
         private TextBlock Init_AdjacencyInfoTextBlock()
         {
@@ -135,22 +140,22 @@ namespace ButtonGrid_Git
             {
                 case Key.Up:
                     
-                    nextGridButton = KeyBoardHelper.HandleKeyUp(currentGridButton, this);
+                    nextGridButton = Utility.Keyboard.KeyBoardHelper.HandleKeyUp(currentGridButton, this);
 
                     break;
                 case Key.Down:
 
-                    nextGridButton = KeyBoardHelper.HandleKeyDown(currentGridButton, this);
+                    nextGridButton = Utility.Keyboard.KeyBoardHelper.HandleKeyDown(currentGridButton, this);
 
                     break;
                 case Key.Left:
 
-                    nextGridButton = KeyBoardHelper.HandleKeyLeft(currentGridButton, this);
+                    nextGridButton = Utility.Keyboard.KeyBoardHelper.HandleKeyLeft(currentGridButton, this);
 
                     break;
                 case Key.Right:
 
-                    nextGridButton = KeyBoardHelper.HandleKeyRight(currentGridButton, this);
+                    nextGridButton = Utility.Keyboard.KeyBoardHelper.HandleKeyRight(currentGridButton, this);
 
                     break;
                 default:
@@ -221,7 +226,7 @@ namespace ButtonGrid_Git
 
             nextGridButton.Background = Brushes.LightBlue;
 
-            previouslySelectedButton.Background = Brushes.Red;
+            previouslySelectedButton.Background = TerrainTypeEnum.terrainTypeDictionary[previouslySelectedButton.GridButtonTerrainType];
 
             previouslySelectedButton = nextGridButton;
         }

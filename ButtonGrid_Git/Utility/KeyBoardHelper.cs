@@ -2,9 +2,8 @@
 using ButtonGrid_Git.Constants;
 using System;
 using System.Windows.Threading;
-using System.Windows.Input;
 
-namespace ButtonGrid_Git
+namespace ButtonGrid_Git.Utility.Keyboard
 {
     public static class KeyBoardHelper
     {
@@ -56,7 +55,7 @@ namespace ButtonGrid_Git
         {
             mainWindow.Dispatcher.BeginInvoke((Action)delegate
             {
-                Keyboard.Focus(mainWindow.gridButtonMultiArray[Convert.ToInt32(mainWindow.StartingRow), Convert.ToInt32(mainWindow.StartingColumn)]);
+                System.Windows.Input.Keyboard.Focus(mainWindow.gridButtonMultiArray[Convert.ToInt32(mainWindow.StartingRow), Convert.ToInt32(mainWindow.StartingColumn)]);
             }, DispatcherPriority.Render);
         }
 

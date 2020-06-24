@@ -55,13 +55,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="KeyBoardHelper.cs" />
+    <Compile Include="Enum\TerrainTypeEnum.cs" />
+    <Compile Include="TerrainGeneration\GenerateTerrain.cs" />
+    <Compile Include="Utility\KeyBoardHelper.cs" />
     <Compile Include="VariableConstants.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="AdjacencyHelper.cs" />
+    <Compile Include="Utility\AdjacencyHelper.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -2,7 +2,7 @@
 using ButtonGrid_Git.Constants;
 
 
-namespace ButtonGrid_Git.Adjacency
+namespace ButtonGrid_Git.Utility.Adjacency
 {
     static class AdjacencyHelper
     {
