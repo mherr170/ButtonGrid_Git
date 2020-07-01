@@ -1,6 +1,6 @@
 ﻿using ButtonGrid_Git.DTO;
 using ButtonGrid_Git.Constants;
-
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace ButtonGrid_Git.Utility.Adjacency
 {
@@ -36,7 +36,7 @@ namespace ButtonGrid_Git.Utility.Adjacency
         private static void setRightAdjacency(GridButton newGridButton, int rowNumber, int columnNumber)
         {
             //Does it have valid right adjacency?
-            if (columnNumber + 1 > VariableConstants.SQUARE_SIDE_LENGTH)
+            if (columnNumber + 1 >= VariableConstants.SQUARE_SIDE_LENGTH)
             {
                 newGridButton.RightAdjacency.ColumnNumber = VariableConstants.INVALID_ADJACENCY;
             }
@@ -51,7 +51,7 @@ namespace ButtonGrid_Git.Utility.Adjacency
         private static void setDownAdjacency(GridButton newGridButton, int rowNumber, int columnNumber)
         {
             //Does it have valid down adjacency?
-            if (rowNumber + 1 > VariableConstants.SQUARE_SIDE_LENGTH)
+            if (rowNumber + 1 >= VariableConstants.SQUARE_SIDE_LENGTH)
             {
                 newGridButton.DownAdjacency.RowNumber = VariableConstants.INVALID_ADJACENCY;
             }

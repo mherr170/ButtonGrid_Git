@@ -42,7 +42,7 @@ namespace ButtonGrid_Git
             mainStackPanel.Children.Add(adjacencyInfoTextBlock);
             mainStackPanel.Children.Add(gridPanel);
 
-            Utility.Keyboard.KeyBoardHelper.SetKeyBoardFocusToMiddleGridButton(this);
+            //Utility.Keyboard.KeyBoardHelper.SetKeyBoardFocusToMiddleGridButton(this);
             adjacencyInfoTextBlock.Text = BuildAdjacencyInfoDisplayString(gridButtonMultiArray[Convert.ToInt32(StartingRow), Convert.ToInt32(StartingColumn)]).ToString();
 
             //Get hooks into the terrain generation
@@ -54,7 +54,7 @@ namespace ButtonGrid_Git
 
         private void InitTerrainGeneration(GridButton[,] gridButtonMultiArray)
         {
-            GenerateTerrain gridTerrain = new GenerateTerrain(gridButtonMultiArray, StartingRow, StartingColumn);
+            GenerateTerrain gridTerrain = new GenerateTerrain(gridButtonMultiArray);
         }
 
         private TextBlock Init_AdjacencyInfoTextBlock()

@@ -6,5 +6,7 @@
 
         public const int INVALID_ADJACENCY = -1;
 
+        public const int SELECT_RANDOM_TILES_NUMBER = 5;
+
     }
 }

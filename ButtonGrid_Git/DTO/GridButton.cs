@@ -11,7 +11,19 @@ namespace ButtonGrid_Git.DTO
         public GridPosition DownAdjacency { get; set; }
         public GridPosition LeftAdjacency { get; set; }
 
-        public TerrainTypeEnum.TerrainType GridButtonTerrainType { get; set; }
+        public bool HasBeenSwappedToLand { get; set; }
+
+        private TerrainTypeEnum.TerrainType _gridButtonTerrainType;
+
+        public TerrainTypeEnum.TerrainType GridButtonTerrainType
+        {
+            get { return _gridButtonTerrainType; }
+            set
+            {
+                _gridButtonTerrainType = value;
+                this.Background = TerrainTypeEnum.terrainTypeDictionary[_gridButtonTerrainType];
+            }
+        }
 
         public bool IsSelected { get; set; }
 
