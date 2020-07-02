@@ -29,17 +29,48 @@ namespace ButtonGrid_Git.TerrainGeneration
             //This list stores the GridButtons that, if valid, are adjacent to the randomTileList.
             List<GridButton> tileAdjacencyList = new List<GridButton>();
 
+            //The list to store GridButtons that are adjacent to the GridButtons within the tileAdjacencyList (first iteration)
+            List<GridButton> tileAdjacencyListSecondIteration = new List<GridButton>();
+
             //Swap the randomly selected tiles to Land.
             SwapTilesToLand(randomTileList);
 
             //The first iteration where the adjacent buttons have an 80% chance to be swapped to Land.
-            CalculateAndSwapFirstIteration(gridButtonMultiArray, randomTileList, tileAdjacencyList);
+            GatherAdjacentTilesFirstIteration(gridButtonMultiArray, randomTileList, tileAdjacencyList);
+
+            CalculateAndSwapFirstIteration(tileAdjacencyList);
 
             //Need to populate another adjacency list, from the tileAdjacencyList.
-            //PopulateSecondTierAdjacencyList()
+            PopulateSecondTierAdjacencyList(gridButtonMultiArray, tileAdjacencyList, tileAdjacencyListSecondIteration);
 
             //The second interation where the tiles within the tileAdjacencyList have 40% chance to be swapped to Land.
-            //CalculateAndSwapSecondIteration(tileAdjacencyList);
+            CalculateAndSwapSecondIteration(tileAdjacencyListSecondIteration);
+        }
+
+        private void PopulateSecondTierAdjacencyList(GridButton[,] gridButtonMultiArray, List<GridButton> tileAdjacencyList, List<GridButton> tileAdjacencyListSecondIteration)
+        {
+            foreach (GridButton adjacentButton in tileAdjacencyList)
+            {
+                if (adjacentButton.IsTopAdjacencyValid)
+                {
+                    tileAdjacencyListSecondIteration.Add(gridButtonMultiArray[adjacentButton.TopAdjacency.RowNumber, adjacentButton.TopAdjacency.ColumnNumber]);
+                }
+
+                if (adjacentButton.IsDownAdjacencyValid)
+                {
+                    tileAdjacencyListSecondIteration.Add(gridButtonMultiArray[adjacentButton.DownAdjacency.RowNumber, adjacentButton.DownAdjacency.ColumnNumber]);
+                }
+
+                if (adjacentButton.IsLeftAdjacencyValid)
+                {
+                    tileAdjacencyListSecondIteration.Add(gridButtonMultiArray[adjacentButton.LeftAdjacency.RowNumber, adjacentButton.LeftAdjacency.ColumnNumber]);
+                }
+
+                if (adjacentButton.IsRightAdjacencyValid)
+                {
+                    tileAdjacencyListSecondIteration.Add(gridButtonMultiArray[adjacentButton.RightAdjacency.RowNumber, adjacentButton.RightAdjacency.ColumnNumber]);
+                }
+            }
         }
 
         private void CalculateAndSwapSecondIteration(List<GridButton> tileAdjacencyList)
@@ -70,54 +101,42 @@ namespace ButtonGrid_Git.TerrainGeneration
             }
         }
 
-        private void CalculateAndSwapFirstIteration(GridButton[,] gridButtonMultiArray, List<GridButton> randomTileList, List<GridButton> tileAdjacencyList)
+        private void GatherAdjacentTilesFirstIteration(GridButton[,] gridButtonMultiArray, List<GridButton> randomTileList, List<GridButton> tileAdjacencyList)
         {
             //Calculate percentage and swap to land if necessary for the five initially picked GridButtons.
             foreach (GridButton randomGridButton in randomTileList)
             {
-                //Check validity of the Top Adjacent button.
-                if (randomGridButton.TopAdjacency.RowNumber != VariableConstants.INVALID_ADJACENCY && randomGridButton.TopAdjacency.ColumnNumber != VariableConstants.INVALID_ADJACENCY)
+                if (randomGridButton.IsTopAdjacencyValid)
                 {
-                    //If valid, assign button and calculate percent change to swap to land.
-                    GridButton tempTopAdjacency = gridButtonMultiArray[randomGridButton.TopAdjacency.RowNumber, randomGridButton.TopAdjacency.ColumnNumber];
-                    CalculateEightyPercentChanceAndSwitchToLand(tempTopAdjacency);
-
                     //Add the valid adjacent button to the tileAdjacencyList for calculating on the next iteration.
                     tileAdjacencyList.Add(gridButtonMultiArray[randomGridButton.TopAdjacency.RowNumber, randomGridButton.TopAdjacency.ColumnNumber]);
                 }
 
-                //Check validity of the Bottom (Down) Adjacent button.
-                if (randomGridButton.DownAdjacency.RowNumber != VariableConstants.INVALID_ADJACENCY && randomGridButton.DownAdjacency.ColumnNumber != VariableConstants.INVALID_ADJACENCY)
+                if (randomGridButton.IsDownAdjacencyValid)
                 {
-                    //If valid, assign button and calculate percent change to swap to land.
-                    GridButton tempDownAdjacency = gridButtonMultiArray[randomGridButton.DownAdjacency.RowNumber, randomGridButton.DownAdjacency.ColumnNumber];
-                    CalculateEightyPercentChanceAndSwitchToLand(tempDownAdjacency);
-
                     //Add the valid adjacent button to the tileAdjacencyList for calculating on the next iteration.
                     tileAdjacencyList.Add(gridButtonMultiArray[randomGridButton.DownAdjacency.RowNumber, randomGridButton.DownAdjacency.ColumnNumber]);
                 }
 
-                //Check validity of the Left Adjacent button.
-                if (randomGridButton.LeftAdjacency.RowNumber != VariableConstants.INVALID_ADJACENCY && randomGridButton.LeftAdjacency.ColumnNumber != VariableConstants.INVALID_ADJACENCY)
+                if (randomGridButton.IsLeftAdjacencyValid)
                 {
-                    //If valid, assign button and calculate percent change to swap to land.
-                    GridButton tempLeftAdjacency = gridButtonMultiArray[randomGridButton.LeftAdjacency.RowNumber, randomGridButton.LeftAdjacency.ColumnNumber];
-                    CalculateEightyPercentChanceAndSwitchToLand(tempLeftAdjacency);
-
                     //Add the valid adjacent button to the tileAdjacencyList for calculating on the next iteration.
                     tileAdjacencyList.Add(gridButtonMultiArray[randomGridButton.LeftAdjacency.RowNumber, randomGridButton.LeftAdjacency.ColumnNumber]);
                 }
 
-                //Check validity of the Right Adjacent button.
-                if (randomGridButton.RightAdjacency.RowNumber != VariableConstants.INVALID_ADJACENCY && randomGridButton.RightAdjacency.ColumnNumber != VariableConstants.INVALID_ADJACENCY)
+                if (randomGridButton.IsRightAdjacencyValid)
                 {
-                    //If valid, assign button and calculate percent change to swap to land.
-                    GridButton tempRightAdjacency = gridButtonMultiArray[randomGridButton.RightAdjacency.RowNumber, randomGridButton.RightAdjacency.ColumnNumber];
-                    CalculateEightyPercentChanceAndSwitchToLand(tempRightAdjacency);
-
                     //Add the valid adjacent button to the tileAdjacencyList for calculating on the next iteration.
                     tileAdjacencyList.Add(gridButtonMultiArray[randomGridButton.RightAdjacency.RowNumber, randomGridButton.RightAdjacency.ColumnNumber]);
                 }
+            }
+        }
+
+        private void CalculateAndSwapFirstIteration(List<GridButton> tileAdjacencyList)
+        {
+            foreach (GridButton gridButton in tileAdjacencyList)
+            {
+                CalculateEightyPercentChanceAndSwitchToLand(gridButton);
             }
         }
 
