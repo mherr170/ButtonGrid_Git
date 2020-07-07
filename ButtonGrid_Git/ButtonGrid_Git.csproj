@@ -58,6 +58,7 @@
     <Compile Include="Enum\TerrainTypeEnum.cs" />
     <Compile Include="TerrainGeneration\GenerateTerrain.cs" />
     <Compile Include="Utility\KeyBoardHelper.cs" />
+    <Compile Include="Utility\RandomNumberGenerator.cs" />
     <Compile Include="VariableConstants.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
