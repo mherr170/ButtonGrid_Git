@@ -17,8 +17,6 @@ namespace ButtonGrid_Git
     {
         public GridButton[,] gridButtonMultiArray;
 
-        public readonly TextBlock adjacencyInfoTextBlock;
-
         public GridButton previouslySelectedButton;
 
         public double StartingRow { get; set; }
@@ -29,43 +27,24 @@ namespace ButtonGrid_Git
             gridButtonMultiArray = new GridButton[Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH), Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH)];
 
             InitializeComponent();
-
-            StackPanel mainStackPanel = Init_StackPanel();
-
-            //Add a Text Block to display the adjacency information for any button that you click.
-            adjacencyInfoTextBlock = Init_AdjacencyInfoTextBlock();
-            
+             
             Grid gridPanel = Init_GridPanel();
 
-            HightlightMiddleOfGrid();
-
-            mainStackPanel.Children.Add(adjacencyInfoTextBlock);
-            mainStackPanel.Children.Add(gridPanel);
-
-            //Utility.Keyboard.KeyBoardHelper.SetKeyBoardFocusToMiddleGridButton(this);
-            adjacencyInfoTextBlock.Text = BuildAdjacencyInfoDisplayString(gridButtonMultiArray[Convert.ToInt32(StartingRow), Convert.ToInt32(StartingColumn)]).ToString();
+            //mainStackPanel.Children.Add(adjacencyInfoTextBlock);
+            WPFButtonGrid.HorizontalAlignment = HorizontalAlignment.Center;
+            WPFButtonGrid.VerticalAlignment = VerticalAlignment.Center;
+            WPFButtonGrid.Children.Add(gridPanel);
 
             //Get hooks into the terrain generation
             InitTerrainGeneration(gridButtonMultiArray);
 
-            //Add the Stack Panel with all of our logic into the actual Content 
-            Content = mainStackPanel;
+            HightlightMiddleOfGrid();
+            Utility.Keyboard.KeyBoardHelper.SetKeyBoardFocusToMiddleGridButton(this);
         }
 
         private void InitTerrainGeneration(GridButton[,] gridButtonMultiArray)
         {
             GenerateTerrain gridTerrain = new GenerateTerrain(gridButtonMultiArray);
-        }
-
-        private TextBlock Init_AdjacencyInfoTextBlock()
-        {
-            TextBlock _textBlock = new TextBlock
-            {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-             };
-
-            return _textBlock;
         }
 
         private Grid Init_GridPanel()
@@ -98,22 +77,11 @@ namespace ButtonGrid_Git
             return gridPanel;
         }
 
-        private StackPanel Init_StackPanel()
-        {
-            StackPanel _stackPanel = new StackPanel
-            {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            return _stackPanel;
-        }
-
         private GridButton Init_SingleGridButton(int rowNumber, int columnNumber)
         {
             GridButton newGridButton = new GridButton(rowNumber, columnNumber)
             {
-                Background = Brushes.Red,
+                Foreground = Brushes.PaleGoldenrod
             };
 
             newGridButton.Content = newGridButton.gridPosition.RowNumber + ", " + newGridButton.gridPosition.ColumnNumber;
@@ -127,7 +95,6 @@ namespace ButtonGrid_Git
         {
             //I'm not sure what order these get fired, but they appear to all work.
             newGridButton.KeyDown += NewGridButton_KeyDown;
-            newGridButton.Click += NewGridButton_Click_DisplayAdjacencyInfo;
             newGridButton.Click += NewGridButton_Click;
         }
 
@@ -178,35 +145,6 @@ namespace ButtonGrid_Git
             TransitionPreviouslySelectedButton(clickedGridButton);
         }
 
-        private void NewGridButton_Click_DisplayAdjacencyInfo(object sender, RoutedEventArgs e)
-        {
-            GridButton tempGridButton = e.Source as GridButton;
-
-            adjacencyInfoTextBlock.Text = BuildAdjacencyInfoDisplayString(tempGridButton).ToString();
-        }
-
-        public StringBuilder BuildAdjacencyInfoDisplayString(GridButton tempGridButton)
-        {
-            StringBuilder adjacencyInfoString = new StringBuilder();
-
-            adjacencyInfoString.Append(String.Format("My Position - Row: {0} - Col: {1}", AdjacencyHelper.IsPositionValid(tempGridButton.gridPosition.RowNumber), AdjacencyHelper.IsPositionValid(tempGridButton.gridPosition.ColumnNumber)));
-            adjacencyInfoString.Append("\n");
-
-            adjacencyInfoString.Append(String.Format("Top - Row: {0} - Col: {1}", AdjacencyHelper.IsPositionValid(tempGridButton.TopAdjacency.RowNumber), AdjacencyHelper.IsPositionValid(tempGridButton.TopAdjacency.ColumnNumber)));
-            adjacencyInfoString.Append("\n");
-
-            adjacencyInfoString.Append(String.Format("Right - Row: {0} - Col: {1}", AdjacencyHelper.IsPositionValid(tempGridButton.RightAdjacency.RowNumber), AdjacencyHelper.IsPositionValid(tempGridButton.RightAdjacency.ColumnNumber)));
-            adjacencyInfoString.Append("\n");
-
-            adjacencyInfoString.Append(String.Format("Bottom - Row: {0} - Col: {1}", AdjacencyHelper.IsPositionValid(tempGridButton.DownAdjacency.RowNumber), AdjacencyHelper.IsPositionValid(tempGridButton.DownAdjacency.ColumnNumber)));
-            adjacencyInfoString.Append("\n");
-
-            adjacencyInfoString.Append(String.Format("Left - Row: {0} - Col: {1}", AdjacencyHelper.IsPositionValid(tempGridButton.LeftAdjacency.RowNumber), AdjacencyHelper.IsPositionValid(tempGridButton.LeftAdjacency.ColumnNumber)));
-            adjacencyInfoString.Append("\n");
-
-            return adjacencyInfoString;
-        }
-
         private void HightlightMiddleOfGrid()
         {
             FindAndAssignMiddleOfGrid();
@@ -222,8 +160,6 @@ namespace ButtonGrid_Git
 
         public void TransitionPreviouslySelectedButton(GridButton nextGridButton)
         {
-            adjacencyInfoTextBlock.Text = BuildAdjacencyInfoDisplayString(nextGridButton).ToString();
-
             nextGridButton.Background = Brushes.LightBlue;
 
             previouslySelectedButton.Background = TerrainTypeEnum.terrainTypeDictionary[previouslySelectedButton.GridButtonTerrainType];

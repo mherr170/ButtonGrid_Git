@@ -5,6 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ButtonGrid"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="900" Width="1600">
+    <Grid Background="Green">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
 
+        <StackPanel Orientation="Vertical" Grid.Column="0">
+            <StackPanel Background="LightGreen" Width="Auto" Height="450"></StackPanel>
+            <StackPanel Background="Tan" Width="Auto" Height="450"></StackPanel>
+        </StackPanel>
+
+        <StackPanel x:Name="WPFButtonGrid" Background="Black" Grid.Column="1" Width="Auto" Height="Auto"></StackPanel>
+
+    </Grid>
 </Window>
