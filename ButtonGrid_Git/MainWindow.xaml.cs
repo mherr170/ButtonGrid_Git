@@ -24,22 +24,7 @@ namespace ButtonGrid_Git
 
         public MainWindow()
         {
-            gridButtonMultiArray = new GridButton[Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH), Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH)];
-
-            InitializeComponent();
-             
-            Grid gridPanel = Init_GridPanel();
-
-            //mainStackPanel.Children.Add(adjacencyInfoTextBlock);
-            WPFButtonGrid.HorizontalAlignment = HorizontalAlignment.Center;
-            WPFButtonGrid.VerticalAlignment = VerticalAlignment.Center;
-            WPFButtonGrid.Children.Add(gridPanel);
-
-            //Get hooks into the terrain generation
-            InitTerrainGeneration(gridButtonMultiArray);
-
-            HightlightMiddleOfGrid();
-            Utility.Keyboard.KeyBoardHelper.SetKeyBoardFocusToMiddleGridButton(this);
+            InitializeComponent();          
         }
 
         private void InitTerrainGeneration(GridButton[,] gridButtonMultiArray)
@@ -143,6 +128,27 @@ namespace ButtonGrid_Git
             clickedGridButton.Background = Brushes.LightBlue;
 
             TransitionPreviouslySelectedButton(clickedGridButton);
+        }
+
+        private void generateTerrainButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            VariableConstants.SQUARE_SIDE_LENGTH = Convert.ToDouble(squareSideLengthTxtBox.Text);
+
+            gridButtonMultiArray = new GridButton[Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH), Convert.ToInt32(VariableConstants.SQUARE_SIDE_LENGTH)];
+
+            Grid gridPanel = Init_GridPanel();
+
+            //mainStackPanel.Children.Add(adjacencyInfoTextBlock);
+            WPFButtonGrid.HorizontalAlignment = HorizontalAlignment.Center;
+            WPFButtonGrid.VerticalAlignment = VerticalAlignment.Center;
+            WPFButtonGrid.Children.Add(gridPanel);
+
+            //Get hooks into the terrain generation
+            InitTerrainGeneration(gridButtonMultiArray);
+
+            HightlightMiddleOfGrid();
+            Utility.Keyboard.KeyBoardHelper.SetKeyBoardFocusToMiddleGridButton(this);
         }
 
         private void HightlightMiddleOfGrid()

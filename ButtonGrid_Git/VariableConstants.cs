@@ -2,7 +2,7 @@
 {
     public class VariableConstants
     {
-        public const double SQUARE_SIDE_LENGTH = 33;
+        public static double SQUARE_SIDE_LENGTH = 33;
 
         public const int INVALID_ADJACENCY = -1;
 
